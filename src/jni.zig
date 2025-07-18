@@ -11,11 +11,11 @@ pub const JNI = opaque {
     // Underlying implementation
     fn JniReturnType(comptime function: @TypeOf(.literal)) type {
         @setEvalBranchQuota(10_000);
-        return @typeInfo(@typeInfo(std.meta.fieldInfo(android.JNINativeInterface, function).type).Pointer.child).Fn.return_type.?;
+        return @typeInfo(@typeInfo(std.meta.fieldInfo(android.JNINativeInterface, function).type).pointer.child).@"fn".return_type.?;
     }
 
     pub inline fn invokeJniNoException(jni: *JNI, comptime function: @TypeOf(.literal), args: anytype) JniReturnType(function) {
-        const env = @ptrCast(*android.JNIEnv, @alignCast(@alignOf(*android.JNIEnv), jni));
+        const env: *android.JNIEnv = @ptrCast(@alignCast(jni));
         return @call(
             .auto,
             @field(env.*, @tagName(function)),
@@ -29,7 +29,7 @@ pub const JNI = opaque {
         ClassNotDefined,
     };
 
-    pub inline fn invokeJni(jni: *JNI, comptime function: @TypeOf(.literal), args: anytype) Error!JniReturnType(function) {
+    pub fn invokeJni(jni: *JNI, comptime function: @TypeOf(.literal), args: anytype) Error!JniReturnType(function) {
         const value = jni.invokeJniNoException(function, args);
         if (jni.invokeJniNoException(.ExceptionCheck, .{}) == android.JNI_TRUE) {
             log.err("Encountered exception while calling: {s} {any}", .{ @tagName(function), args });
@@ -135,7 +135,7 @@ pub const JNI = opaque {
         pub fn init(jni: *JNI, string: android.jstring) Error!String {
             const len = try jni.invokeJni(.GetStringLength, .{string});
             const ptr = try jni.invokeJni(.GetStringChars, .{ string, null });
-            const slice = ptr[0..@intCast(usize, len)];
+            const slice = ptr[0..@intCast(len)];
             return String{
                 .jstring = string,
                 .slice = slice,

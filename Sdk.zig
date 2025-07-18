@@ -87,6 +87,7 @@ pub fn init(b: *Build, user_config: ?UserConfig, toolchains: ToolchainVersions) 
         const zip_add = b.addExecutable(.{
             .name = "zip_add",
             .root_source_file = .{ .cwd_relative = sdkRoot() ++ "/tools/zip_add.zig" },
+            .target = b.standardTargetOptions(.{}),
         });
         zip_add.addCSourceFile(.{
             .file = .{ .cwd_relative = sdkRoot() ++ "/vendor/kuba-zip/zip.c" },
