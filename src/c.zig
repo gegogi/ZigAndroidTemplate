@@ -1,5 +1,7 @@
 const build_options = @import("build_options");
 pub usingnamespace @cImport({
+    // from Sdk.zig:894
+    @cDefine("ANDROID", {});
     @cInclude("EGL/egl.h");
     // @cInclude("EGL/eglext.h");
     @cInclude("GLES2/gl2.h");
