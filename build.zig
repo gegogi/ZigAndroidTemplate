@@ -20,8 +20,8 @@ pub fn build(b: *std.Build) !void {
     // At least not for your production keystore ;)
     const key_store = Sdk.KeyStore{
         .file = ".build_config/android.keystore",
-        .alias = "default",
-        .password = "ziguana",
+        .alias = "my_app_key",
+        .password = "1122qqww",
     };
 
     var libraries = std.ArrayList([]const u8).init(b.allocator);
