@@ -10,10 +10,10 @@ pub fn build(b: *std.Build) !void {
     const sdk = Sdk.init(b, null, .{});
     const mode = b.standardOptimizeOption(.{});
     const android_version = b.option(Sdk.AndroidVersion, "android", "Select the android version, default is 'android9'") orelse .android9;
-    const aaudio = b.option(bool, "aaudio", "Compile with support for AAudio, default is 'false'") orelse false;
+    const aaudio = b.option(bool, "aaudio", "Compile with support for AAudio, default is 'true'") orelse true;
     //const opensl = b.option(bool, "opensl", "Compile with support for OpenSL ES, default is 'true'") orelse true;
     // cimport 도중 struct 간의 dependency loop 문제가 발생
-    const opensl = b.option(bool, "opensl", "Compile with support for OpenSL ES, default is 'true'") orelse false;
+    const opensl = b.option(bool, "opensl", "Compile with support for OpenSL ES, default is 'false'") orelse false;
 
     // Provide some KeyStore structure so we can sign our app.
     // Recommendation: Don't hardcore your password here, everyone can read it.
