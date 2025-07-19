@@ -608,7 +608,6 @@ pub fn createApp(
     const apk_file = align_step.addOutputFileArg(apk_filename);
 
     const apk_install = sdk.b.addInstallBinFile(apk_file, apk_filename);
-    sdk.b.getInstallStep().dependOn(&apk_install.step);
 
     const java_dir = sdk.b.getInstallPath(.lib, "java");
     if (java_files_opt) |java_files| {
@@ -657,12 +656,12 @@ pub fn createApp(
         "--ks", // keystore
         key_store.file,
     });
+    const ks_pass = sdk.b.fmt("pass:{s}", .{key_store.password});
+    sign_step.addArgs(&.{ "--ks-pass", ks_pass });
+    // warning이 나서 넣어보았지만 소용없었다.
+    //sign_step.addArgs(&.{"--enable-native-access=ALL-UNNAMED"});
+    sign_step.addFileArg(apk_file);
     sign_step.step.dependOn(&align_step.step);
-    {
-        const pass = sdk.b.fmt("pass:{s}", .{key_store.password});
-        sign_step.addArgs(&.{ "--ks-pass", pass });
-        sign_step.addFileArg(apk_file);
-    }
 
     inline for (std.meta.fields(AppTargetConfig)) |fld| {
         const target_name = @field(Target, fld.name);
@@ -695,10 +694,13 @@ pub fn createApp(
     // const compress_step = compressApk(b, android_config, apk_file, "zig-out/demo.packed.apk");
     // compress_step.dependOn(sign_step);
 
+    // 이게 왜 없었지?
+    apk_install.step.dependOn(&sign_step.step);
+
     return CreateAppStep{
         .sdk = sdk,
         .first_step = &make_unsigned_apk.step,
-        .final_step = &sign_step.step,
+        .final_step = &apk_install.step,
         .libraries = libs.toOwnedSlice() catch unreachable,
         .build_options = build_options,
         .package_name = sdk.b.dupe(app_config.package_name),
