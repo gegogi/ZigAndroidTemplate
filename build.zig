@@ -9,7 +9,7 @@ pub fn build(b: *std.Build) !void {
     // Default-initialize SDK
     const sdk = Sdk.init(b, null, .{});
     const mode = b.standardOptimizeOption(.{});
-    const android_version = b.option(Sdk.AndroidVersion, "android", "Select the android version, default is 'android5'") orelse .android5;
+    const android_version = b.option(Sdk.AndroidVersion, "android", "Select the android version, default is 'android9'") orelse .android9;
     const aaudio = b.option(bool, "aaudio", "Compile with support for AAudio, default is 'false'") orelse false;
     //const opensl = b.option(bool, "opensl", "Compile with support for OpenSL ES, default is 'true'") orelse true;
     // cimport 도중 struct 간의 dependency loop 문제가 발생
